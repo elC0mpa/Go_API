@@ -4,9 +4,11 @@ import (
 	"api-rest/src/handlers"
 	"api-rest/src/server"
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
+
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 )
@@ -18,11 +20,13 @@ func main() {
 	}
 	PORT := os.Getenv("PORT")
 	JWT := os.Getenv("JWT_SECRET")
+	DATABASE_URL := os.Getenv("DATABASE_URL")
+	fmt.Println(DATABASE_URL)
 
 	s, err := server.NewServer(context.Background(), &server.Config{
 		Port: PORT,
 		JWTSecret: JWT,
-		DatabaseUrl: "test",
+		DatabaseUrl: DATABASE_URL,
 	})
 
 	if err != nil {
@@ -34,4 +38,5 @@ func main() {
 
 func BindRoutes(s server.Server, r *mux.Router) {
 	r.HandleFunc("/", handlers.HomeHandler(s)).Methods(http.MethodGet)
+	r.HandleFunc("/signup", handlers.SignUpHandler(s)).Methods(http.MethodPost)
 }

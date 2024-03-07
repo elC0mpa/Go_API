@@ -1,11 +1,13 @@
 package server
 
 import (
+	"api-rest/src/database"
+	"api-rest/src/repository"
 	"context"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
-
 	"github.com/gorilla/mux"
 )
 
@@ -50,7 +52,13 @@ func NewServer (ctx context.Context, config *Config) (*Broker, error) {
 func (b *Broker) Start(binder func (s Server, r *mux.Router)) {
 	b.router = mux.NewRouter()
 	binder(b, b.router)
-	err := http.ListenAndServe(b.config.Port, b.router)
+	repo, err := database.NewPostgresRepository(b.config.DatabaseUrl)
+	if err != nil {
+		fmt.Println("Error connecting to database")
+		log.Fatal(err)
+	}
+	repository.SetRepository(repo)
+	err = http.ListenAndServe(b.config.Port, b.router)
 	if err != nil {
 		log.Fatal("Listen and Serve", err)
 	}
