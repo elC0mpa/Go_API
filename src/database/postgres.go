@@ -2,9 +2,12 @@ package database
 
 import (
 	"api-rest/src/models"
+	"api-rest/src/services"
 	"context"
 	"database/sql"
+	"fmt"
 	"log"
+	"time"
 
 	_ "github.com/lib/pq"
 )
@@ -98,6 +101,34 @@ func (repo *PostgresRepository) GetBugById(ctx context.Context, id uint32) (*mod
 		}
 	}
 	return &bug, nil
+}
+
+func (repo *PostgresRepository) ListBugs(ctx context.Context, userId, projectId uint32, startDate, endDate *time.Time) ([]*models.Bug, error) {
+	query := services.BuildListBugsQuery(userId, projectId, startDate, endDate)
+	fmt.Println("query: ", query)
+	rows, err := repo.db.QueryContext(ctx, query)
+
+	defer func() {
+		err = rows.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}()
+
+	var bugs = []*models.Bug{}
+	for rows.Next() {
+		bug := &models.Bug{}
+    		err := rows.Scan(&bug.Id, &bug.Description, &bug.CreationDate, &bug.UserId, &bug.ProjectId)
+    		if err != nil {
+      			return nil, err
+    		}
+    		bugs = append(bugs, bug)
+	}
+	if err = rows.Err(); err != nil {
+    		return nil, err
+  	}
+
+	return bugs, nil
 }
 
 func (repo *PostgresRepository) Close() error {

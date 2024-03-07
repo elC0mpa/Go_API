@@ -3,6 +3,7 @@ package repository
 import (
 	"api-rest/src/models"
 	"context"
+	"time"
 )
 
 type Repository interface {
@@ -14,6 +15,7 @@ type Repository interface {
 
 	InsertBug(ctx context.Context, bug *models.Bug) error
 	GetBugById(ctx context.Context, id uint32) (*models.Bug, error)
+	ListBugs(ctx context.Context, userId, projectId uint32, startDate, endDate *time.Time) ([]*models.Bug, error)
 
 	Close() error
 }
@@ -46,6 +48,10 @@ func InsertBug(ctx context.Context, bug *models.Bug) error {
 
 func GetBugById(ctx context.Context, id uint32) (*models.Bug, error) {
 	return implementation.GetBugById(ctx, id)
+}
+
+func ListBugs(ctx context.Context, userId, projectId uint32, startDate, endDate *time.Time) ([]*models.Bug, error) {
+	return implementation.ListBugs(ctx, userId, projectId, startDate, endDate)
 }
 
 func Close() error {
