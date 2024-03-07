@@ -5,18 +5,22 @@ import (
 	"context"
 )
 
-type UserRepository interface {
+type Repository interface {
 	InsertUser(ctx context.Context, user *models.User) error
 	GetUserById(ctx context.Context, id uint32) (*models.User, error)
 
 	InsertProject(ctx context.Context, project *models.Project) error
 	GetProjectById(ctx context.Context, id uint32) (*models.Project, error)
+
+	InsertBug(ctx context.Context, bug *models.Bug) error
+	GetBugById(ctx context.Context, id uint32) (*models.Bug, error)
+
 	Close() error
 }
 
-var implementation UserRepository
+var implementation Repository
 
-func SetRepository(repository UserRepository) {
+func SetRepository(repository Repository) {
 	implementation = repository
 }
 
@@ -34,6 +38,14 @@ func InsertProject(ctx context.Context, project *models.Project) error {
 
 func GetProjectById(ctx context.Context, id uint32) (*models.Project, error) {
 	return implementation.GetProjectById(ctx, id)
+}
+
+func InsertBug(ctx context.Context, bug *models.Bug) error {
+	return implementation.InsertBug(ctx, bug)
+}
+
+func GetBugById(ctx context.Context, id uint32) (*models.Bug, error) {
+	return implementation.GetBugById(ctx, id)
 }
 
 func Close() error {

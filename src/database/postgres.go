@@ -74,6 +74,32 @@ func (repo *PostgresRepository) GetProjectById(ctx context.Context, id uint32) (
 	return &project, nil
 }
 
+func (repo *PostgresRepository) InsertBug(ctx context.Context, bug *models.Bug) error {
+	_, err := repo.db.ExecContext(ctx, "INSERT INTO bugs (description, user_id, project_id) VALUES ($1, $2, $3)", bug.Description, bug.UserId, bug.ProjectId)
+	return err
+}
+
+func (repo *PostgresRepository) GetBugById(ctx context.Context, id uint32) (*models.Bug, error) {
+	rows, err := repo.db.QueryContext(ctx, "SELECT id, description, creation_date, user_id, project_id FROM bugs WHERE id = $1", id)
+
+	defer func() {
+		err = rows.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}()
+
+	var bug = models.Bug{}
+	for rows.Next() {
+		if err = rows.Scan(&bug.Id, &bug.Description, &bug.CreationDate, &bug.UserId, &bug.ProjectId); err == nil {
+			return &bug, nil
+		} else {
+			return nil, err
+		}
+	}
+	return &bug, nil
+}
+
 func (repo *PostgresRepository) Close() error {
 	return repo.db.Close()
 }
