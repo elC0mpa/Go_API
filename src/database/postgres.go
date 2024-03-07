@@ -5,6 +5,7 @@ import (
 	"context"
 	"database/sql"
 	"log"
+
 	_ "github.com/lib/pq"
 )
 
@@ -35,6 +36,7 @@ func (repo *PostgresRepository) GetUserById(ctx context.Context, id uint32) (*mo
 			log.Fatal(err)
 		}
 	}()
+
 	var user = models.User{}
 	for rows.Next() {
 		if err = rows.Scan(&user.Id, &user.Name, &user.Surname); err == nil {
@@ -44,6 +46,32 @@ func (repo *PostgresRepository) GetUserById(ctx context.Context, id uint32) (*mo
 		}
 	}
 	return &user, nil
+}
+
+func (repo *PostgresRepository) InsertProject(ctx context.Context, project *models.Project) error {
+	_, err := repo.db.ExecContext(ctx, "INSERT INTO projects (name, description) VALUES ($1, $2)", project.Name, project.Description)
+	return err
+}
+
+func (repo *PostgresRepository) GetProjectById(ctx context.Context, id uint32) (*models.Project, error) {
+	rows, err := repo.db.QueryContext(ctx, "SELECT id, name, description FROM projects WHERE id = $1", id)
+
+	defer func() {
+		err = rows.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}()
+
+	var project = models.Project{}
+	for rows.Next() {
+		if err = rows.Scan(&project.Id, &project.Name, &project.Description); err == nil {
+			return &project, nil
+		} else {
+			return nil, err
+		}
+	}
+	return &project, nil
 }
 
 func (repo *PostgresRepository) Close() error {

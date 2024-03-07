@@ -6,3 +6,10 @@ CREATE TABLE users (
     surname VARCHAR NOT NULL
 );
 
+DROP TABLE IF EXISTS projects;
+
+CREATE TABLE projects (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR NOT NULL,
+    description VARCHAR
+);
