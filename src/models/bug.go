@@ -7,5 +7,5 @@ type Bug struct {
 	Description string `json:"description"`
 	CreationDate time.Time `json:"creation_date"`
 	UserId uint32 `json:"user_id"`
-	ProjectId uint32 `json:"projet_id"`
+	ProjectId uint32 `json:"project_id"`
 }

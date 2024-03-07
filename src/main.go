@@ -40,4 +40,5 @@ func BindRoutes(s server.Server, r *mux.Router) {
 	r.HandleFunc("/user/{id}", handlers.GetUserByIdHandler(s)).Methods(http.MethodGet)
 	r.HandleFunc("/project", handlers.CreateProjectHandler(s)).Methods(http.MethodPost)
 	r.HandleFunc("/bug", handlers.CreateBugHandler(s)).Methods(http.MethodPost)
+	r.HandleFunc("/bug/{id}", handlers.GetBugByIdHandler(s)).Methods(http.MethodGet)
 }
