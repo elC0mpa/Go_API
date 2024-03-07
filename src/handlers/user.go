@@ -2,8 +2,8 @@ package handlers
 
 import (
 	"api-rest/src/models"
-	"api-rest/src/repository"
 	"api-rest/src/server"
+	"api-rest/src/services"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -40,7 +40,7 @@ func CreateUserHandler(s server.Server) http.HandlerFunc {
 			Name: request.Name,
 			Surname: request.Surname,
 		}
-		err = repository.InsertUser(r.Context(), &user)
+		err = services.CreateUser(r.Context(), &user)
 		if err != nil {
 			fmt.Println("Error inserting user")
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -63,9 +63,9 @@ func GetUserByIdHandler(s server.Server) http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		user, err := repository.GetUserById(r.Context(), uint32(id))
+		user, err := services.GetUserById(r.Context(), uint32(id))
 		if err != nil {
-			fmt.Println("Error inserting user")
+			fmt.Println("Error Getting user")
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}

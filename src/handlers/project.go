@@ -2,8 +2,8 @@ package handlers
 
 import (
 	"api-rest/src/models"
-	"api-rest/src/repository"
 	"api-rest/src/server"
+	"api-rest/src/services"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -32,7 +32,7 @@ func CreateProjectHandler(s server.Server) http.HandlerFunc {
 			Name: request.Name,
 			Description: request.Description,
 		}
-		err = repository.InsertProject(r.Context(), &project)
+		err = services.CreateProject(r.Context(), &project)
 		if err != nil {
 			fmt.Println("Error inserting project")
 			http.Error(w, err.Error(), http.StatusInternalServerError)

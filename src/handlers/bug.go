@@ -2,13 +2,14 @@ package handlers
 
 import (
 	"api-rest/src/models"
-	"api-rest/src/repository"
 	"api-rest/src/server"
+	"api-rest/src/services"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
 	"time"
+
 	"github.com/gorilla/mux"
 )
 
@@ -46,7 +47,7 @@ func CreateBugHandler(s server.Server) http.HandlerFunc {
 			UserId: request.User,
 			ProjectId: request.Project,
 		}
-		err = repository.InsertBug(r.Context(), &bug)
+		err = services.CreateBug(r.Context(), &bug)
 		if err != nil {
 			fmt.Println("Error inserting bug")
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -70,7 +71,7 @@ func GetBugByIdHandler(s server.Server) http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		bug, err := repository.GetBugById(r.Context(), uint32(id))
+		bug, err := services.GetBugById(r.Context(), uint32(id))
 		if err != nil {
 			fmt.Println("Error getting bug")
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -81,18 +82,7 @@ func GetBugByIdHandler(s server.Server) http.HandlerFunc {
 			http.Error(w, "Bug not found", http.StatusNotFound)
 			return
 		}
-		user, err := repository.GetUserById(r.Context(), bug.UserId)
-		if user.Id == 0 {
-			fmt.Println("User not found")
-			http.Error(w, "User not found", http.StatusNotFound)
-			return
-		}
-		project, err := repository.GetProjectById(r.Context(), bug.ProjectId)
-		if project.Id == 0 {
-			fmt.Println("Project not found")
-			http.Error(w, "Project not found", http.StatusNotFound)
-			return
-		}
+		project, user, err := services.PopulateBug(r.Context(), w, bug)
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(GetBugResponse{
 			Id: bug.Id,
