@@ -9,28 +9,28 @@ import (
 	"net/http"
 )
 
-type SignUpRequest struct {
-	Email string `json:"email"`
-	Password string `json:"password"`
+type CreateUserRequest struct {
+	Name string `json:"name"`
+	Surname string `json:"surname"`
 }
 
-type SignUpResponse struct {
-	Id uint32 `json:"id"`
-	Email string `json:"email"`
+type CreateUserResponse struct {
+	Name string `json:"name"`
+	Surname string `json:"surname"`
 }
 
-func SignUpHandler(s server.Server) http.HandlerFunc {
+func CreateUserHandler(s server.Server) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		request := SignUpRequest{}
+		request := CreateUserRequest{}
 		err := json.NewDecoder(r.Body).Decode(&request)
 		if err != nil {
-			fmt.Println("Error decoding")
+			fmt.Println("Error decoding", err.Error())
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 		user := models.User{
-			Email: request.Email,
-			Password: request.Password,
+			Name: request.Name,
+			Surname: request.Surname,
 		}
 		err = repository.InsertUser(r.Context(), &user)
 		if err != nil {
@@ -39,9 +39,9 @@ func SignUpHandler(s server.Server) http.HandlerFunc {
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(SignUpResponse{
-			Id: user.Id,
-			Email: user.Email,
+		json.NewEncoder(w).Encode(CreateUserResponse{
+			Name: user.Name,
+			Surname: user.Surname,
 		})
 	}
 }
