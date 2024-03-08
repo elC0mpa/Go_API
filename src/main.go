@@ -4,7 +4,6 @@ import (
 	"api-rest/src/handlers"
 	"api-rest/src/server"
 	"context"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -18,13 +17,10 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 	PORT := os.Getenv("PORT")
-	JWT := os.Getenv("JWT_SECRET")
 	DATABASE_URL := os.Getenv("DATABASE_URL")
-	fmt.Println(DATABASE_URL)
 
 	s, err := server.NewServer(context.Background(), &server.Config{
 		Port: PORT,
-		JWTSecret: JWT,
 		DatabaseUrl: DATABASE_URL,
 	})
 

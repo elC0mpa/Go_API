@@ -13,7 +13,6 @@ import (
 
 type Config struct {
 	Port string
-	JWTSecret string 
 	DatabaseUrl string
 }
 
@@ -33,9 +32,6 @@ func (b *Broker) Config() *Config{
 func NewServer (ctx context.Context, config *Config) (*Broker, error) {
 	if config.DatabaseUrl == "" {
 		return nil, errors.New("DatabaseUrl required")
-	}
-	if config.JWTSecret == "" {
-		return nil, errors.New("JWTSecret required")
 	}
 	if config.Port == "" {
 		return nil, errors.New("Port required")
